@@ -1,0 +1,22 @@
+I. Tier 0
+1. Machines
+- Manual Press: turns ingots to plates (max: 6; cost: free)
+- Manual Cutter: turns plates to wires (max: 6; cost: free)
+- Coal Furnace: turns ores into ingots at an inefficient rate (max: 6; cost: free)
+- Assembler: assembles stuff (max: 8; cost: free)
+- Basic Research Lab: consumes items to make science packs (max: 1; cost: free)
+- Buffer: holds 20 items of the same type (max: 8; cost: free)
+2. Recipes
+- 1 ore -> (Coal Furnace) 1 ingot
+- 1 ingot -> (Manual Press) 1 plate
+- 1 plate -> (Manual Press) 12 foil
+- 1 coal -> (Manual Press): 1 coal dust
+- 1 plate -> (Manual Cutter) 4 wire
+- 1 plank -> (Manual Cutter) 1 wood tube
+- 1 wood -> (Manual Cutter) 8 plank
+- 3 copper foil + 4 wood plank -> (Assembler) 1 primitive circuit board
+- 6 copper wire + 2 coal dust + 3 plank tube -> (Assembler) 3 primitive resistors
+- 2 copper wire + 6 tin foil + 1 plank tube -> (Assembler) 1 primitive diode
+- 1 primitive circuit board + 8 primitive resistors + 3 primitive diodes -> (Assembler) 1 primitive circuit
+- 1 primitive circuit -> (Research Center) 8 red science pack
+- 1 red science pack + 6 iron plate -> (Assembler) 1 basic machine casing
