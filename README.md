@@ -1,2 +1,2 @@
-# pvzclone
-pvz clone
+# infinactory
+no longer a pvz clone ;)
