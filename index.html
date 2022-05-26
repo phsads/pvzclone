@@ -1,0 +1,103 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	<canvas width="768" height="576" id="canvas"></canvas>
+</body>
+<script src="variables.js" type="text/javascript"></script>
+<script src="terrain.js" type="text/javascript"></script>
+<script>
+var canvas = document.getElementById("canvas")
+var ctx = canvas.getContext("2d")
+var baseGame = {
+	terrain: [], //2d array for terrain (101x101)
+	blocks: {}, //key: a;b -> position; stores data about blocks
+	workers: [] //index 0: amt of workers; index 1: amount of machiners; i2: amt of miners; i3: amt of i/o-ers
+}
+var game = {}
+function loadGame() {
+	var loadedGame = JSON.parse(localStorage.getItem("factory2"))
+	loadedGame = updateData(loadedGame,baseGame)
+	if (loadedGame.terrain[0] == undefined) {
+		//loadedGame.terrain = generateTerrain()
+		generateOres()
+	}
+}
+//recipe enconder (obselete) for dev :)
+function encodeRecipe(inputs,outputs,machineTypes) {
+	/*
+	machine types:
+		1 - smelter
+		2 - press
+		3 - cutter
+		4 - assembler
+		5 - researcher
+	*/
+	//same template as recipes but id is replaced by name
+	for (let i in inputs) {
+
+		//items
+		if (inputs[i][0]) {
+			inputs[i][1] = items.indexOf(inputs[i][1])
+			if (inputs[i][1] == -1) inputs[i][1] = "NOT FOUND"
+		}
+		//fluids
+		else {
+			inputs[i][1] = fluids.indexOf(inputs[i][1])
+			if (inputs[i][1] == -1) inputs[i][1] = "NOT FOUND"
+		}
+	}
+	for (let o in outputs) {
+
+		//items
+		if (outputs[o][0]) {
+			outputs[o][1] = items.indexOf(outputs[o][1])
+			if (outputs[o][1] == -1) outputs[o][1] = "NOT FOUND"
+		}
+		//fluids
+		else {
+			outputs[o][1] = fluids.indexOf(outputs[o][1])
+			if (outputs[o][1] == -1) outputs[o][1] = "NOT FOUND"
+		}
+	}
+	prompt("Encoded recipe:",JSON.stringify([inputs,outputs,machineTypes]))
+}
+function Block() {
+	this.remaining = 0
+	this.work = 0
+	this.id = 0
+}
+function updateData(a,b) {
+	//a: old, b: new
+	for (let t in b) {
+		if (typeof b[t] == "object") {
+			if (a[t] == undefined) {
+				a[t] = b[t]
+			} else {
+				a[t] = updateData(a[t],b[t])
+			}
+		} else if (a[t] == undefined) {
+			a[t] = b[t]
+		}
+	}
+	return a
+}
+function generateTerrain() {
+	//var heightMap = f()
+	for (let a in heightMap) {
+		for (let b in heightMap) {
+			var h = heightMap[a][b]
+			if (h<0.4) heightMap[a][b] = 1 //ocean
+			else if (h<0.43) heightMap[a][b] = 2 //clay
+			else if (h<0.5) heightMap[a][b] = 3 //sand
+			else heightMap[a][b] = 4 //grass
+		}
+	}
+	return heightMap
+}
+</script>
+</html>
