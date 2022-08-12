@@ -3,101 +3,889 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<title>gaming</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href='https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap' rel="stylesheet">
 </head>
-<body>
-	<canvas width="768" height="576" id="canvas"></canvas>
+<body onload="Load()">
+	<div style="text-align:center"><canvas id="canvas" width="1050" height="600" onmousemove="getMousePos(event)" style="background-color:black"></canvas></div>
 </body>
-<script src="variables.js" type="text/javascript"></script>
-<script src="terrain.js" type="text/javascript"></script>
 <script>
+//map storage
+var maps = [
+	[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,2,0,0,0,0],[0,0,0,0,2,0,0,0,0,0,0,0,0,2,2,1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,2,0,0,0],[0,0,0,0,2,0,0,0,0,0,0,0,2,2,2,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,2,0,0],[0,0,0,0,2,0,0,0,0,0,0,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0],[0,0,0,0,2,0,0,0,0,0,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],[0,0,0,3,0,0,0,0,0,1,2,2,0,0,0,0,0,0,1,3,3,1,0,0,0,0,0,1,0,0,1,1,0,0,0,0],[0,0,0,3,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0],[0,0,0,3,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,3,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0],[0,0,0,0,2,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0],[0,0,0,0,2,0,0,0,3,0,0,0,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0],[0,0,0,3,0,0,0,0,3,0,0,0,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,0],[0,0,3,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],[0,0,3,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],[0,0,2,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],[0,0,2,0,0,0,0,0,1,1,2,2,2,1,1,1,2,2,2,1,1,4,4,4,4,4,1,1,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0]],
+	[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
+	[[5,5,3,3,5,5,3,3,5,5,3,3,5,5,3,3,5,5,5,5,3,3,5,5,3,3,5,5,3,3,5,5,3,3,5,5],[5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5],[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,3,3,5,5,0,0,0,0,3],[5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,3,3,3,0,0,0,0,0,5],[5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,5,3,0,0,0,5,0,0,5],[3,0,5,0,0,0,0,0,0,0,0,5,5,5,5,5,5,5,0,0,0,0,0,0,0,0,0,5,0,0,0,3,5,0,0,3],[3,0,0,5,5,0,0,5,5,3,3,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,0,0,3],[5,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,3,3,0,0,5],[5,0,0,0,0,0,0,0,0,0,0,5,5,5,5,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5],[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],[5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,5,5,5,5,5,5,0,0,0,0,0,0,0,0,0,0,5],[5,0,0,3,3,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,5],[3,0,0,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,3,3,5,5,0,0,5,5,0,0,3],[3,0,0,5,3,0,0,0,5,0,0,0,0,0,0,0,0,0,5,5,5,5,5,5,5,0,0,0,0,0,0,0,0,5,0,3],[5,0,0,5,0,0,0,3,5,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5],[5,0,0,0,0,0,3,3,3,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5],[3,0,0,0,0,5,5,3,3,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],[5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5],[5,5,3,3,5,5,3,3,5,5,3,3,5,5,3,3,5,5,5,5,3,3,5,5,3,3,5,5,3,3,5,5,3,3,5,5]],
+	[[0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0],[0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0],[0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0],[0,0,0,0,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0],[0,0,0,0,0,0,0,0,2,2,2,2,5,5,1,1,1,1,1,1,1,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,2,2,2,2,5,1,1,1,1,1,1,1,1,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,2,2,2,2,1,1,1,1,5,5,5,5,1,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0],[1,1,1,1,0,0,0,0,3,3,3,3,0,0,0,0,0,0,0,0,1,2,2,2,0,0,0,0,1,1,1,1,0,0,0,0],[1,1,1,1,0,0,0,0,3,3,3,3,0,0,0,0,0,0,0,0,1,2,2,2,0,0,0,0,1,1,1,1,0,0,0,0],[1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,2,2,1,0,0,0,0,1,1,1,1,0,0,0,0],[0,0,0,0,0,0,0,0,1,1,1,1,1,3,3,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,4,0,0,1,1,3,3,1,0,0,0,0,0,0,0,0,4,4,4,4,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,4,0,0,1,1,3,3,1,0,0,0,0,0,0,0,0,4,4,4,4,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,1,3,3,1,1,3,3,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0],[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,3,3,1,0,0,0,0,1,5,5,1,1,1,1,1,0,0,0,0],[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,4,0,0,0,0,3,2,2,5,1,1,1,1,0,0,0,0],[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,4,0,0,0,0,3,2,2,5,1,1,1,1,0,0,0,0],[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,3,3,1,0,0,0,0,1,3,3,1,1,1,1,1,0,0,0,0],[0,0,0,0,0,0,0,0,5,5,5,5,0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
+	[[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]],
+]
+var enemies = {}
+var HalfPI = Math.PI/2
 var canvas = document.getElementById("canvas")
 var ctx = canvas.getContext("2d")
-var baseGame = {
-	terrain: [], //2d array for terrain (101x101)
-	blocks: {}, //key: a;b -> position; stores data about blocks
-	workers: [] //index 0: amt of workers; index 1: amount of machiners; i2: amt of miners; i3: amt of i/o-ers
+var images = {
+	icons: new Image(),
+	powerups: new Image(),
+	weapons: new Image(),
 }
-var game = {}
-function loadGame() {
-	var loadedGame = JSON.parse(localStorage.getItem("factory2"))
-	loadedGame = updateData(loadedGame,baseGame)
-	if (loadedGame.terrain[0] == undefined) {
-		//loadedGame.terrain = generateTerrain()
-		generateOres()
-	}
+images.icons.src = "icons.png"
+images.powerups.src = "powerups.png"
+images.weapons.src = "weapons.png"
+var game = {
+	upgrades: Array(128).fill(0),
 }
-//recipe enconder (obselete) for dev :)
-function encodeRecipe(inputs,outputs,machineTypes) {
-	/*
-	machine types:
-		1 - smelter
-		2 - press
-		3 - cutter
-		4 - assembler
-		5 - researcher
-	*/
-	//same template as recipes but id is replaced by name
-	for (let i in inputs) {
+var dps = 0
+var peakDPS = 0
+var temp = {
+	player: {
+		x: 450,
+		y: 300,
+		dx: 0,
+		dy: 0,
+		rotation: 0,
+		isMoving: 0,
+		hp: 9,
+		mhp: 9,
+		armor: 0,
+		weaponSlot: [
 
-		//items
-		if (inputs[i][0]) {
-			inputs[i][1] = items.indexOf(inputs[i][1])
-			if (inputs[i][1] == -1) inputs[i][1] = "NOT FOUND"
-		}
-		//fluids
-		else {
-			inputs[i][1] = fluids.indexOf(inputs[i][1])
-			if (inputs[i][1] == -1) inputs[i][1] = "NOT FOUND"
-		}
+		],
+		currentWeapon: 0,
+		dashCooldown: 100,
+		dashCooldownTime: 0,
+		dashState: 0, 
+		attackCooldown: 0,
+		reloadState: -1,
+		timeSinceShot: 0,
+	},
+	map:maps[0],
+	//25x25 per block; 0 = no block; 1 = block, 2 = destroyable, 3 = projectile phase thru, 4 = player/enemies phase thru, 5: metal block
+	pickups: [],
+	enemies: [],
+	enemiesLimbo: [],
+	projs: [],
+	time: 0,
+	diff: 0, //0 = easy, 1 = med, 2 = hard, 3 = insane
+	enemySpawnTimer: 0,
+}
+var mapButObj = {}
+var mouseDown = false
+temp.map[11][17] = 0
+temp.map[11][18] = 0
+temp.map[12][17] = 0
+temp.map[12][18] = 0
+var weapons = {}
+function update() {
+	if (temp.player.hp <= 0) {
+		alert("You died! \nYour score is " + temp.time + ".\nYou peak DPS is " + peakDPS + ".\nRefresh to retry.")
+		return
 	}
-	for (let o in outputs) {
+	temp.time++
+	updatePlayer()
+	updateEntities()
+	render()
+	temp.enemySpawnTimer++
+	if (temp.enemySpawnTimer >= clamp(250,700,700-temp.time/800) || (temp.enemies.length == 0 && temp.enemiesLimbo.length == 0)) {
+		spawnEnemies()
+		temp.enemySpawnTimer = 0
+	}
+	for (let k in keyTapped) {
+		keyTapped[k] = false
+	}
+	peakDPS = max(dps,peakDPS)
+}
+function render() {
+	ctx.fillStyle = "#111111ac"
+	ctx.fillRect(0,0,900,700)
+	var wpn = temp.player.weaponSlot[temp.player.currentWeapon]
 
-		//items
-		if (outputs[o][0]) {
-			outputs[o][1] = items.indexOf(outputs[o][1])
-			if (outputs[o][1] == -1) outputs[o][1] = "NOT FOUND"
-		}
-		//fluids
-		else {
-			outputs[o][1] = fluids.indexOf(outputs[o][1])
-			if (outputs[o][1] == -1) outputs[o][1] = "NOT FOUND"
+	//limbo
+	for (let eL in temp.enemiesLimbo) {
+		var tr = temp.enemiesLimbo[eL], enmL = tr[0], LTime = tr[1]
+		ctx.fillStyle = enmL.color + floor(255-LTime/50*255).toString(16)
+		ctx.beginPath()
+		ctx.arc(enmL.x,enmL.y,enmL.size,0,7)
+		ctx.fill()
+		ctx.closePath()
+	}
+	ctx.lineWidth = 2
+	ctx.strokeStyle = "#f008"
+	ctx.beginPath()
+	if (wpn.type == "melee") {
+		var rot = temp.player.rotation
+		ctx.moveTo(temp.player.x+cos(rot-0.35)*wpn.range,temp.player.y+sin(rot-0.35)*wpn.range)
+		ctx.lineTo(temp.player.x,temp.player.y)
+		ctx.lineTo(temp.player.x+cos(rot+0.35)*wpn.range,temp.player.y+sin(rot+0.35)*wpn.range)
+		ctx.stroke()
+		ctx.closePath()
+		ctx.beginPath()
+		ctx.arc(temp.player.x,temp.player.y,wpn.range,rot-0.35,rot+0.35)
+		ctx.stroke()
+		ctx.closePath()
+	} else if (wpn.type == "gun") {
+		//distance
+		var d = hypot(mousePos.y-temp.player.y,mousePos.x-temp.player.x)
+		//rotate the player rotation by 90 degrees
+		var rot1 = temp.player.rotation + HalfPI
+		var rot2 = temp.player.rotation - HalfPI
+		var moveSpread = temp.diff>=1?0.8+temp.player.isMoving/15:1
+		var fireSpread = temp.diff>=1?1.5-min((temp.player.timeSinceShot/1.2/wpn.fireRate),1.8)*0.5:1
+		var widthFactor = tan(wpn.spread*moveSpread*fireSpread)*d
+		ctx.moveTo(mousePos.x+cos(rot1)*widthFactor,mousePos.y+sin(rot1)*widthFactor)
+		ctx.lineTo(mousePos.x+cos(rot2)*widthFactor,mousePos.y+sin(rot2)*widthFactor)
+		ctx.stroke()
+		ctx.closePath()
+	}
+	for (let pu in temp.pickups) {
+		var pickup = temp.pickups[pu]
+		if (pickup.type == "weapon") {
+			var idx = weapons[pickup.data].renderIdx
+			ctx.drawImage(images.weapons,idx*24,0,24,24,round(pickup.x)-12,round(pickup.y)-12,24,24)
+		} else if (pickup.type == "hp") {
+			var idx = ["hp","armor"].indexOf(pickup.data)
+			ctx.drawImage(images.icons,idx*20,0,20,20,pickup.x-10,pickup.y-10,20,20)
 		}
 	}
-	prompt("Encoded recipe:",JSON.stringify([inputs,outputs,machineTypes]))
-}
-function Block() {
-	this.remaining = 0
-	this.work = 0
-	this.id = 0
-}
-function updateData(a,b) {
-	//a: old, b: new
-	for (let t in b) {
-		if (typeof b[t] == "object") {
-			if (a[t] == undefined) {
-				a[t] = b[t]
-			} else {
-				a[t] = updateData(a[t],b[t])
+	for (let p in temp.projs) {
+		var proj = temp.projs[p]
+		ctx.fillStyle = "#ddd7"
+		var baseY = tan(proj.rot)
+		var rot1 = atan2(-1,baseY)
+		var rot2 = atan2(1,-baseY)
+		ctx.beginPath()
+		ctx.moveTo(proj.x+cos(rot1)*proj.size,proj.y+sin(rot1)*proj.size)
+		ctx.lineTo(proj.x+cos(rot2)*proj.size,proj.y+sin(rot2)*proj.size)
+		ctx.lineTo(proj.x-cos(proj.rot)*proj.speed*8,proj.y-sin(proj.rot)*proj.speed*8)
+		ctx.fill()
+		ctx.closePath()
+		ctx.fillStyle = proj.color
+		ctx.beginPath()
+		ctx.arc(proj.x,proj.y,proj.size,0,7)
+		ctx.fill()
+		ctx.closePath()
+	}
+	ctx.lineWidth = 1
+	ctx.closePath()
+	ctx.fillStyle = "rgb(59,166,237)"
+	if (temp.player.dashState > 0) ctx.fillStyle = "#1bde1e"
+	ctx.beginPath()
+	ctx.arc(temp.player.x,temp.player.y,15,0,7)
+	ctx.fill()
+	ctx.closePath()
+	for (let x in temp.map) {
+		for (let y in temp.map[0]) {
+			if (temp.map[x][y] != 0) {
+				var colors = ["#fff","#aaa","#2ff5","#ff25","#8796ac"]
+				ctx.fillStyle = colors[temp.map[x][y]-1]
+				ctx.fillRect(y*25,x*25,25,25)
 			}
-		} else if (a[t] == undefined) {
-			a[t] = b[t]
 		}
 	}
-	return a
+	for (let e in temp.enemies) {
+		var enm = temp.enemies[e]
+		ctx.fillStyle = enm.color
+		ctx.beginPath()
+		ctx.arc(enm.x,enm.y,enm.size,0,7)
+		ctx.fill()
+		ctx.closePath()
+	}
+
+	ctx.fillStyle = "#0f154d"
+	ctx.fillRect(900,0,150,600)
+	ctx.fillStyle="#999"
+	ctx.fillRect(905,60,120,100)
+	ctx.drawImage(images.icons,905,160)
+	ctx.font = "14px Jetbrains Mono"
+	ctx.textAlign = "center"
+	ctx.textBaseline = "middle"
+	ctx.fillText(temp.player.hp,915,50,20)
+	ctx.fillText(temp.player.armor,935,50,20)
+	ctx.fillText(wpn.currentMag,955,50,20)
+	ctx.fillText(wpn.noMags,975,50,20)
+	ctx.fillText(max(0,wpn.fireRate-temp.player.attackCooldown),995,50,20)
+	ctx.fillText(wpn.durability,1015,50,20)
+	var pc
+	ctx.fillStyle = "#2ed925"; pc = temp.player.hp/temp.player.mhp; ctx.fillRect(905,60+(1-pc)*100,20,pc*100)
+	ctx.fillStyle = "#757575"; pc = temp.player.armor/temp.player.mhp; ctx.fillRect(925,60+(1-pc)*100,20,pc*100)
+	ctx.fillStyle = "#e7eb2d"; pc = wpn.currentMag/wpn.magSize; ctx.fillRect(945,60+(1-pc)*100,20,pc*100)
+	if (temp.player.reloadState != -1) pc = clamp(0,1,1-(temp.player.reloadState/60)); ctx.fillRect(945,60+(1-pc)*100,20,pc*100)
+	//ctx.fillStyle = "#e7eb2d"; pc = wpn.currentMag/wpn.magSize; ctx.fillRect(965,60+(1-pc)*100,20,pc*100)
+	ctx.fillStyle = "#51d6ed"; pc = min(1,temp.player.attackCooldown/wpn.fireRate); ctx.fillRect(985,60+(1-pc)*100,20,pc*100)
+	ctx.fillStyle = "#e38d1e"; pc = wpn.durability/wpn.baseDura; ctx.fillRect(1005,60+(1-pc)*100,20,pc*100)
+	ctx.fillStyle = "#0f154d"
+	if (wpn.type == "melee") ctx.fillRect(945,30,40,150)
+	if (wpn.type == "gun") ctx.fillRect(1005,30,20,150)
+	if (wpn.durability == Infinity) ctx.fillRect(1005,30,20,150)
+	if (temp.diff < 1) ctx.fillRect(945,30,20,150)
+	if (temp.diff < 2) {
+		ctx.fillRect(965,30,20,150)
+		ctx.fillRect(1005,30,20,150)
+	}
+	ctx.fillStyle = "#000";ctx.fillRect(915,200,120,60)
+	ctx.fillStyle = "#108a03"
+	ctx.font = "30px Jetbrains Mono"; ctx.fillText(temp.time,975,230)
 }
-function generateTerrain() {
-	//var heightMap = f()
-	for (let a in heightMap) {
-		for (let b in heightMap) {
-			var h = heightMap[a][b]
-			if (h<0.4) heightMap[a][b] = 1 //ocean
-			else if (h<0.43) heightMap[a][b] = 2 //clay
-			else if (h<0.5) heightMap[a][b] = 3 //sand
-			else heightMap[a][b] = 4 //grass
+function updatePlayer() {
+
+	//speen update
+	temp.player.rotation = atan2(mousePos.y-temp.player.y,mousePos.x-temp.player.x)
+
+	//some variables
+	var speed = 0.5
+	var wpn = temp.player.weaponSlot[temp.player.currentWeapon]
+	
+	//some variables update
+	temp.player.dashCooldownTime++
+	temp.player.attackCooldown++
+	temp.player.timeSinceShot++
+	if (temp.player.reloadState > 0) {
+		temp.player.reloadState--
+	} else if (temp.player.reloadState == 0) {
+		if (wpn.noMags) {
+			wpn.currentMag = wpn.magSize
+			wpn.noMags--
+		}
+		temp.player.reloadState--
+	}
+	if (!wpn.currentMag && wpn.noMags && temp.player.reloadState == -1) {
+		temp.player.reloadState = 60
+	}
+
+	//key pressed check (ew)
+	if (keyPressed.w) {
+		temp.player.dy += -speed
+		temp.player.isMoving++
+	}
+	if (keyPressed.a) {
+		temp.player.dx += -speed
+		temp.player.isMoving++
+	}
+	if (keyPressed.s) {
+		temp.player.dy += speed
+		temp.player.isMoving++
+	}
+	if (keyPressed.d) {
+		temp.player.dx += speed
+		temp.player.isMoving++
+	}
+	if (keyPressed.r) {
+		if (temp.player.dashCooldownTime >= temp.player.dashCooldown) {
+			temp.player.dashState = temp.player.dashCooldown*0.3
+			temp.player.dashCooldownTime = 0
 		}
 	}
-	return heightMap
+	
+	//setup for movement + collision bs
+	var moveDirection = atan2(temp.player.dy,temp.player.dx)
+	var toMove = hypot(temp.player.dx,temp.player.dy)
+	var dashMoving = temp.player.dashState >= temp.player.dashCooldown*0.3-10
+	
+	if (dashMoving) {toMove += 6;temp.player.isMoving+=5}
+	//h
+	while (toMove > 0) {
+
+		//new position
+		var newX = temp.player.x + cos(moveDirection)*min(1,toMove)
+		var newY = temp.player.y + sin(moveDirection)*min(1,toMove)
+		toMove--
+
+		//collision check
+		var collidedX = false, collidedY = false
+		for (let x in temp.map) {
+			for (let y in temp.map[0]) {
+				var type = temp.map[x][y]
+				if (type == 1 || type == 2 || type == 3 || type == 5) {
+					collidedX = collidedX || CRCollision(y*25, x*25, 25, 25, newX, temp.player.y, 13.5)
+					collidedY = collidedY || CRCollision(y*25, x*25, 25, 25, temp.player.x, newY, 13.5)
+				}
+			}
+		}
+
+		//out of bounds check
+		if (newX < 15 || newX > 885) collidedX = true
+		if (newY < 15 || newY > 585) collidedY = true
+
+		//what to do after
+		if (collidedX) temp.player.dx = 0
+		else temp.player.x = newX
+		if (collidedY) temp.player.dy = 0
+		else temp.player.y = newY
+
+		//oh no, i cant move D:
+		if (collidedX&&collidedY) break
+	}
+
+	//fiction
+	temp.player.dx *= 0.85
+	temp.player.dy *= 0.85
+
+	//secrect thing
+	temp.player.isMoving *= 0.85
+	temp.player.dashState--
+
+	if (mouseDown) attack()
+	for (let e in temp.enemies) {
+		var enm = temp.enemies[e]
+		if (CCCollision(enm.x,enm.y,enm.size,temp.player.x,temp.player.y,15) && dashMoving && enm.dashCooldown) {
+			temp.enemies[e].hp -= 5
+			var dmg = 5
+			dps += dmg; setTimeout(new Function("dps -= " + dmg),1000) 
+			enm.dashCooldown = false
+		} else if (!dashMoving) {
+			enm.dashCooldown = true
+		}
+	}
+	for (let pu in temp.pickups) {
+		var pickup = temp.pickups[pu]
+		if (CCCollision(temp.player.x,temp.player.y,15,pickup.x,pickup.y,20)) {
+			if (pickup.type == "weapon" && temp.player.reloadState == -1) {
+				if (wpn.name == pickup.data && weapons[pickup.data].type != "melee") {
+					temp.player.weaponSlot[temp.player.currentWeapon].noMags += 1
+					temp.pickups.splice(pu,1)
+					break
+				} else if (keyTapped.e) {
+					temp.player.weaponSlot[temp.player.currentWeapon] = JSON.parse(JSON.stringify(weapons[pickup.data]))
+					temp.pickups.splice(pu,1)
+					break
+				}
+			} else if (pickup.type == "hp") {
+				temp.player[pickup.data] = min(temp.player.mhp,temp.player[pickup.data]+1)
+				temp.pickups.splice(pu,1)
+			}
+		}
+	}
+	if (keyTapped.q && temp.player.reloadState == -1) temp.player.currentWeapon = 1 - temp.player.currentWeapon
 }
+function updateEntities() {
+	for (let e in temp.enemies) {
+		var enm = temp.enemies[e]
+		temp.enemies[e].update()
+		if (enm.toDelete) {
+			spawnPickups(enm.lootFactor,enm.x,enm.y)
+			temp.enemies.splice(e,1)
+		}
+	}
+	for (let p in temp.projs) {
+		temp.projs[p].update()
+		if (temp.projs[p].toDelete) temp.projs.splice(p,1)
+	}
+	for (let eL in temp.enemiesLimbo) {
+		temp.enemiesLimbo[eL][1]--
+		if (temp.enemiesLimbo[eL][1] == 0) {
+			temp.enemies.push(temp.enemiesLimbo[eL][0])
+			temp.enemiesLimbo.splice(eL,1)
+		}
+	}
+	for (let pu in temp.pickups) {
+		var pickup = temp.pickups[pu]
+		var toMove = pickup.speed
+		while (toMove > 0) {
+
+			//new position
+			var newX = pickup.x + cos(pickup.rot)*min(1,toMove)
+			var newY = pickup.y + sin(pickup.rot)*min(1,toMove)
+			toMove--
+
+			//collision check
+			var collidedX = false, collidedY = false
+
+			//map
+			var toBreak = false
+			for (let x in temp.map) {
+				if (abs(x*25-pickup.y) >= 100) continue
+				for (let y in temp.map[0]) {
+					if (abs(y*25-pickup.x) >= 100) continue
+					if (temp.map[x][y] != 0) {
+						collidedX = collidedX || CRCollision(y*25, x*25, 25, 25, newX, pickup.y, 14)
+						collidedY = collidedY || CRCollision(y*25, x*25, 25, 25, pickup.x, newY, 14)
+					}
+					if (collidedX||collidedY) toBreak = true
+					if (toBreak) break
+				}
+				if (toBreak) break
+			}
+			//out of bounds check
+			if (newX < 15|| newX > 885) collided = true
+			if (newY < 15 || newY > 585) collided = true
+
+			//what to do after
+			if (!collidedX) temp.pickups[pu].x = newX
+			if (!collidedY) temp.pickups[pu].y = newY
+
+			//oh no, i cant move D:
+			if (collidedX||collidedY) break
+		}
+		temp.pickups[pu].speed *= 0.85
+	}
+}
+function PRDistance(Rx,Ry,Rw,Rh,Px,Py) {
+
+	//first half: check if the line perpendicular to the width edges cuts them without extending
+	//2nd half: same but height edges
+	var cornerEdge = (Rx<=Px&&Px<=Rx+Rw) + 2*(Ry<=Py&&Py<=Ry+Rh)
+	switch (cornerEdge) {
+		case 0: //corner
+			var c1 = (Rx-Px   )**2+(Ry-Py   )**2 //top left
+			var c2 = (Rx+Rw-Px)**2+(Ry-Py   )**2 //top right
+			var c3 = (Rx-Px   )**2+(Ry+Rh-Py)**2 //bottom left
+			var c4 = (Rx+Rw-Px)**2+(Ry+Rh-Py)**2 //bottom right
+			return sqrt(min(c1,c2,c3,c4))
+		break;
+		case 1: // top/bottom edge
+			return min(abs(Ry-Py),abs(Ry+Rh-Py))
+		break;
+		case 2: // left/right edge
+			return min(abs(Rx-Px),abs(Rx+Rw-Px))
+		break;
+		case 3: 
+			return 0
+		break;
+	} //hope this works
+}
+function CRCollision(Rx,Ry,Rw,Rh,Px,Py,r) {
+	return PRDistance(Rx,Ry,Rw,Rh,Px,Py) <= r //false = no collision
+}
+function CCCollision(Ax,Ay,Ar,Bx,By,Br) {
+	return hypot(Ax-Bx,Ay-By) <= Ar+Br
+}
+function getMousePos(event) {
+    	var rect = canvas.getBoundingClientRect();
+    	var nX = event.clientX - rect.left, nY = event.clientY - rect.top
+    	if (nX < 900 && nX > 0 && nY < 600 && nY > 0) {
+		mousePos = {
+        		x: nX,
+        		y: nY,
+		}
+	}
+} //stolem code boo boo boo boo boo boo
+
+//why
+function rayCast(Px,Py,rot,distanceLimit) {
+	var distanceTravelled = 0, times = 20
+	while (times--) {
+		var dist = Infinity
+		for (let x in temp.map) {
+			for (let y in temp.map[0]) {
+				var type = temp.map[x][y]
+				if (type != 0) dist = min(dist,PRDistance(y*25,x*25,25,25,Px,Py))
+			}
+		}
+		for (let e in temp.enemies) {
+			var q = temp.enemies[e]
+			dist = min(dist,max(0,hypot(q.x-Px,q.y-Py)-q.size))
+		}
+		dist = min(distanceTravelled+dist,distanceLimit)-distanceTravelled
+		distanceTravelled += dist
+		Px += cos(rot)*dist
+		Py += sin(rot)*dist
+		if (distanceTravelled == distanceLimit) break
+	}
+
+	//collision checks
+	var typeCollided, dataCollided
+	for (let x in temp.map) {
+		for (let y in temp.map[0]) {
+			var dist = PRDistance(y*25,x*25,25,25,Px,Py)
+			if (dist <= 0.01 && temp.map[x][y] != 0) {
+				typeCollided = "map"
+				dataCollided = [x,y]
+			}
+		}
+	}
+	for (let t in temp.enemies) {
+		var q = temp.enemies[t]
+		if (hypot(q.x-Px,q.y-Py) <= q.size) {
+			typeCollided = "enemies"
+			dataCollided = t
+		}
+	}
+	return [distanceTravelled,typeCollided,dataCollided]
+} //very useful i keep
+var mousePos = {
+	x:0,
+	y:0,
+}
+var keyPressed = {}
+function Enemy(hp, speed, size, color, x, y, fireSpeed, damage, projSpeed, projSize, projSpread, lootFactor, spawnWeight, projAmount) {
+	this.hp = hp
+	this.speed = speed
+	this.size = size
+	this.color = color
+	this.x = x
+	this.y = y
+	this.fireSpeed = fireSpeed
+	this.fireTime = 0
+	this.damage = damage
+	this.projSpeed = projSpeed
+	this.projSize = projSize
+	this.projSpread = projSpread
+	this.projAmount = projAmount
+	this.lootFactor = lootFactor
+	this.spawnWeight = spawnWeight
+	this.rot = 0
+	this.toDelete = false
+	this.dashCooldown = false
+	this.fire = function () {
+		var projsToShoot = this.projAmount
+		while (projsToShoot--) {
+			var projToShoot = new Projectile("enemies",this.damage,this.projSpeed,this.rot+randomRange(-1,1)*this.projSpread,this.projSize, this.x, this.y, this.color)
+			temp.projs.push(projToShoot)
+		}
+	}
+	this.update = function () {
+		this.rot = atan2(temp.player.y-this.y,temp.player.x-this.x)
+		this.move()
+		this.fireTime++
+		if (this.fireTime == this.fireSpeed) {
+			this.fire()
+			this.fireTime = 0
+		}
+		if (this.hp <= 0) this.toDelete = true
+	}
+	this.move = function () {
+		var toMove = this.speed
+		while (toMove > 0) {
+
+			//new position
+			var newX = this.x + cos(this.rot)*min(1,toMove)
+			var newY = this.y + sin(this.rot)*min(1,toMove)
+			toMove--
+
+			//collision check
+			var collidedX = false, collidedY = false
+
+			//map
+			for (let x in temp.map) {
+				for (let y in temp.map[0]) {
+					var type = temp.map[x][y]
+					if (type == 1 || type == 2 || type == 3 || type == 5) {
+						collidedX = collidedX || CRCollision(y*25, x*25, 25, 25, newX, this.y, this.size*0.9)
+						collidedY = collidedY || CRCollision(y*25, x*25, 25, 25, this.x, newY, this.size*0.9)
+					}
+				}
+			}
+
+			//out of bounds check
+			if (newX < 0+this.size || newX > 900-this.size) collided = true
+			if (newY < 0+this.size || newY > 600-this.size) collided = true
+
+			//what to do after
+			if (!collidedX) this.x = newX
+			if (!collidedY) this.y = newY
+
+			//oh no, i cant move D:
+			if (this.toDelete) break
+		}
+	}
+}
+function Projectile(from, damage, speed, rot, size, x, y, color) {
+	this.from = from
+	this.damage = damage
+	this.speed = temp.diff>=4?speed*2:speed
+	this.rot = rot
+	this.size = size
+	this.x = x
+	this.y = y
+	this.toDelete = false
+	this.color = color
+	this.update = function () {
+		var toMove = this.speed
+		while (toMove > 0) {
+
+			//new position
+			var newX = this.x + cos(this.rot)*min(1,toMove)
+			var newY = this.y + sin(this.rot)*min(1,toMove)
+
+			//collision check
+			var collided = false, reflected = false
+
+			//enemies and players
+			if (this.from == "enemies") {
+				collided = CCCollision(this.x,this.y,this.size*0.9,temp.player.x,temp.player.y,13.5)
+				if (collided) damagePlayer()
+			} else if (this.from == "player") {
+				for (let t in temp.enemies) {
+					var enm = temp.enemies[t]
+					collided = CCCollision(this.x,this.y,this.size,enm.x,enm.y,enm.size)
+					if (collided) {
+						temp.enemies[t].hp -= this.damage
+						var dmg = this.damage
+						dps += dmg; setTimeout(new Function("dps -= " + dmg),1000) 
+						break
+					}
+				}
+			}
+
+			//map
+			var toBreak = false, t0 = temp.map.length, t1 = temp.map[0].length, x = max(-1,floor(this.y/25)-3), by = max(-1,floor(this.x/25)-3), t = min(x+4,23), u = min(by+4,35)
+			while (x++<t) {
+				if (collided) break
+				var y = by
+				while (y++<u) {
+					var type = temp.map[x][y]
+					if (type == 1 || type == 2 || type == 4 || type == 5) {
+						collided = collided || CRCollision(y*25, x*25, 25, 25, newX, newY, this.size*0.9)
+					}
+					if (collided && type == 2 && Math.random()<0.15) {
+						temp.map[x][y] = 0
+						toBreak = true
+					} else if (collided && type == 5) {
+						var dx = cos(this.rot)*speed, dy = sin(this.rot)*speed
+						if      (y*25 <= this.x && this.x <= y*25+25) dy *= -1
+						else if (x*25 <= this.y && this.y <= x*25+25) dx *= -1
+						else    {dy *= -1; dx *= -1}
+						this.rot = atan2(dy,dx)
+						collided = false
+						reflected = true
+						toBreak = true
+					}
+					if (toBreak) break
+				}
+				if (toBreak) break
+			}
+			//out of bounds check
+			if (newX < -200 || newX > 1100) collided = true
+			if (newY < -200 || newY > 800) collided = true
+
+			//what to do after
+			if (collided) this.toDelete = true
+			else if (!reflected) {
+				this.x = newX
+				this.y = newY
+			}
+
+			toMove--
+			//oh no, i cant move D:
+			if (this.toDelete) break
+		}
+	}
+}
+function Weapon(name,type, damage, fireRate, spread, projSpeed, projAmount, recoilFactor, magSize, durability, range, projSize, chance, renderIdx) {
+	this.name = name
+	this.type = type
+	this.damage = damage
+	this.fireRate = fireRate
+	this.spread = spread
+	this.projSpeed = projSpeed
+	this.projAmount = projAmount
+	this.recoilFactor = recoilFactor
+	this.magSize = magSize
+	this.durability = durability
+	this.range = range
+	this.projSize = projSize
+	this.currentMag = magSize
+	this.chance = chance
+	this.renderIdx = renderIdx
+	this.noMags = 0
+	this.baseDura = durability
+}
+function Pickup(type, data, x, y, speed, rot) {
+	this.type = type
+	this.data = data
+	this.x = x
+	this.y = y
+	this.speed = speed
+	this.rot = rot
+}
+function intRandom(a,b) {
+	return round(randomRange(a,b))
+}
+function randomRange(a,b) {
+	return Math.random()*(b-a)+a
+}
+function clamp(a,b,x) {
+	return max(a,min(b,x))
+}
+function damagePlayer() {
+	if (temp.player.dashState >= 0) return
+	if (temp.diff >= 3 && Math.random()<0.4 && temp.player.armor) temp.player.hp--
+	else if (temp.player.armor > 0) temp.player.armor--
+	else temp.player.hp--
+	temp.player.hp = max(0,temp.player.hp)
+}
+function attack() {
+	var wpn = temp.player.weaponSlot[temp.player.currentWeapon]
+	if (wpn == undefined) return
+	if (temp.player.attackCooldown >= wpn.fireRate) {
+		var dmg = wpn.damage
+		if (wpn.type == "melee") {
+			if (!wpn.durability) return
+			for (let e in temp.enemies) {
+				var enm = temp.enemies[e]
+				if ((enm.x-temp.player.x)**2+(temp.player.y-enm.y)**2<=(wpn.range+enm.size)**2) {
+					var eRot = Math.atan2(enm.y-temp.player.y,enm.x-temp.player.x)
+					if (abs(eRot-temp.player.rotation) <= 0.35) {
+						temp.enemies[e].hp -= dmg
+						dps += dmg; setTimeout(new Function("dps -= " + dmg),1000) 
+						if (temp.diff >= 2) wpn.durability--
+					}
+				} else {
+					continue
+				}
+			}
+			temp.player.attackCooldown = 0
+		} else if (wpn.type == "gun") {
+			if (!wpn.currentMag) return
+			temp.player.attackCooldown = 0
+			var projsToShoot = floor(wpn.projAmount) + (randomRange(0,1)<(wpn.projAmount%1))
+			var moveSpread = temp.diff>=1?0.8+temp.player.isMoving/15:1
+			var fireSpread = temp.diff>=1?1.5-min((temp.player.timeSinceShot/1.2/wpn.fireRate),1.8)*0.5:1
+			while (projsToShoot--) {
+				var projToSpawn = new Projectile("player",wpn.damage,wpn.projSpeed,temp.player.rotation + randomRange(-wpn.spread,wpn.spread)*moveSpread*fireSpread,wpn.projSize,temp.player.x,temp.player.y,"rgb(59,166,237)")
+				temp.projs.push(projToSpawn)
+			}
+			if (temp.diff >= 1) wpn.currentMag--
+			temp.player.timeSinceShot = 0
+			temp.player.dx -= cos(temp.player.rotation)*wpn.recoilFactor*(temp.diff >= 2)
+			temp.player.dy -= sin(temp.player.rotation)*wpn.recoilFactor*(temp.diff >= 2)
+		}
+	}
+}
+function Load() {
+	var t = prompt("Difficulty?\n0 - Easy\n1 - Medium\n2 - Hard\n3 - Insane\n4 - Insane+")*1
+	if (isNaN(t)) t = 0
+	temp.diff = t
+	weapons["hand"]           = new Weapon("hand","melee",1,30,0,0,0,0,0,Infinity,30,0,Infinity,0)
+	weapons["knife"]          = new Weapon("knife","melee",7.5,40,0,0,0,0,0,40,40,7,0.45,0)
+	weapons["pistol1"]        = new Weapon("pistol1","gun",4,25,0.2,3,1,0.9,7,50,50,7,0.8,1)
+	weapons["pistol2"]        = new Weapon("pistol2","gun",3,15,0.27,3,1,0.6,13,50,50,7,1,2)
+	weapons["pistol3"]        = new Weapon("pistol3","gun",9,50,0.13,7,1,4,5,50,50,9,1.2,3)
+	weapons["smg1"]           = new Weapon("smg1","gun",3,7,0.3,4,1,0.3,25,50,50,7,1.5,4)
+	weapons["shotgun1"]       = new Weapon("shotgun1","gun",8,80,0.5,6,12,11,2,50,50,7,1.8,5)
+	weapons["shotgun2"]       = new Weapon("shotgun2","gun",6,25,0.35,6,8,2.6,8,50,50,7,2,6)
+	weapons["sniper1"]        = new Weapon("sniper1","gun",60,120,0.02,20,1,7,6,50,50,13,3.3,7)
+	weapons["sniper2"]        = new Weapon("sniper2","gun",30,55,0.05,12,1,2,15,50,50,10,3.6,8)
+	weapons["minigun"]        = new Weapon("minigun","gun",5,2,0.25,8,1,1,200,50,50,6,4.4,9)
+	weapons["sasha"]          = new Weapon("sasha","gun",7,3,0.1,11,10,1,230,50,50,6.3,Infinity,10)
+	weapons["minedropper"]    = new Weapon("minedropper","gun",10,80,HalfPI*2,0.003,40,0,5,50,50,11,Infinity,10)
+	weapons["lasergun"]       = new Weapon("lasergun","gun",40,1,0,20,2,0.0001,800,50,50,2,Infinity,10)
+	weapons["sonicgun"]       = new Weapon("sonicgun","gun",12,1,HalfPI*0.95,2000,2,0.03,800,50,50,12,Infinity,10)
+	weapons["devgun"]         = new Weapon("devgun","gun",1000000,1,HalfPI*2,10,20,0,10000,50,50,15,Infinity,10)
+	weapons["devlaser"]       = new Weapon("devlaser","gun",1000000,1,0,10,10,0,10000,50,50,6,Infinity,10)
+	weapons["devmelee"]       = new Weapon("devmelee","melee",1e6,1,0,0,0,0,0,1e10,1100,7,Infinity,10)
+	weapons["playerlauncher"] = new Weapon("playerlauncher","gun",0,60,1,10000,1,30,6,50,50,11,Infinity,10)
+	enemies["basic"] = [10,1,15,"#eb3a23",450,300,75,1,3,7,0.3,1,1,1]
+	enemies["rapid"] = [6,2.3,13,"#f7a81e",450,300,55,1,4,5,0.3,1,1,1]
+	enemies["tank"] = [30,0.6,19,"#f5182b",450,300,100,1,4,7,0.2,2,2,1]
+	enemies["sprayer"] = [20,0.9,15,"#aa24ed",450,300,25,1,5,6,0.45,3,3,1]
+	enemies["scatter"] = [15,1.4,15,"#96de23",450,300,85,1,5,4,0.4,3,4,9]
+	enemies["boss"] = [175,1,24,"#e3541b",450,300,50,1,6,7,0.2,7,8,1]
+	enemies["sniper"] = [50,1.1,15,"#e31b90",450,300,110,1,14,8,0.08,4,6,1]
+	enemies["machinegunner"] = [65,1.05,15,"#4d26eb",450,300,7,1,6.5,6,0.5,5,5,1]
+	enemies["laser"] = [80,0.4,17,"#eb264a",450,300,30,1,0.2,5,0,5,4,1]
+	enemies["sprinkler"] = [70,0,13,"#26ebb9",450,300,6,1,7,4,Math.PI,6,5,1]
+	enemies["shotgunner"] = [55,1.5,15,"#e1eb26",450,300,45,1,5.5,4.5,0.3,6,6,14]
+	temp.player.weaponSlot[0] = weapons["hand"]
+	temp.player.weaponSlot[1] = weapons["hand"]
+	temp.player.mhp = [15,10,10,10,10][temp.diff]
+	temp.player.hp = temp.player.mhp
+	temp.map = maps[intRandom(0,maps.length-1)]
+	setInterval(update,20)
+	setInterval(saveGame,2000)
+}
+function spawnEnemies() {
+	var weight = temp.time/800+1
+	while (weight >= 1) {
+		var k = Object.keys(enemies)
+		var toSpawn = new Enemy(...enemies[k[intRandom(0,k.length-1)]])
+		if (toSpawn.spawnWeight > weight) continue
+		else weight -= toSpawn.spawnWeight
+		var sP = [randomRange(0,900),randomRange(0,600)]
+		while (true) {
+			var collided = false, t0 = temp.map.length, t1 = temp.map[0].length, x = max(-1,floor(sP[1]/25)-3), by = max(-1,floor(sP[0]/25)-3), t = min(x+4,23), u = min(by+4,35)
+			while (x++<t) {
+				var y = by
+				while (y++<u) {
+					var type = temp.map[x][y]
+					if (type == 1 || type == 2 || type == 3 || type == 5) {
+						collided = collided || CRCollision(y*25, x*25, 25, 25, sP[0], sP[1], toSpawn.size)
+					}
+					if (collided) break
+				}
+				if (collided) break
+			}
+			if (!collided) break
+			sP = [randomRange(0,900),randomRange(0,600)]
+		}
+		toSpawn.x = sP[0]
+		toSpawn.y = sP[1]
+		temp.enemiesLimbo.push([toSpawn,50])
+	}
+}
+function spawnPickups(weight,x,y) {
+	if (Math.random() < 0.5+sqrt(weight/20)) {
+		var t = distributedRandom(3)*weight, diff = Infinity, t2
+		for (let q in weapons) {
+			var newDiff = abs(t-weapons[q].chance)
+			if (newDiff < diff) {
+				diff = newDiff
+				t2 = q
+			}
+		}
+		var pickupToSpawn = new Pickup("weapon",t2,x,y,5,randomRange(-Math.PI,Math.PI))
+		temp.pickups.push(pickupToSpawn)
+	}
+	if (Math.random() < 0.1+sqrt(weight/35)) {
+		var pickupToSpawn = new Pickup("hp","hp",x,y,5,randomRange(-Math.PI,Math.PI))
+		temp.pickups.push(pickupToSpawn)
+	}
+	if (Math.random() < 0.1+sqrt(weight/35)) {
+		var pickupToSpawn = new Pickup("hp","armor",x,y,5,randomRange(-Math.PI,Math.PI))
+		temp.pickups.push(pickupToSpawn)
+	}
+}
+function distributedRandom(v) {
+	var sum = 0, times = v
+	while (times--) {
+		sum += Math.random()
+	}
+	return sum / v
+}
+function degreesToRadians(d) {
+	return d * HalfPI/90
+}
+function saveGame() {
+	localStorage.setItem("shooter",btoa(JSON.stringify(game)))
+}
+window.onkeyup   = function (e) {keyPressed[e.key.toLowerCase()] = false;keyTapped2[e.key.toLowerCase()] = false}
+window.onkeydown = function (e) {keyPressed[e.key.toLowerCase()] = true ;keyTapped[e.key.toLowerCase()] = !keyTapped2[e.key.toLowerCase()];keyTapped2[e.key.toLowerCase()] = true}
+var keyTapped = {}, keyTapped2 = {}
+window.onmousedown = function (e) {mouseDown = true}
+window.onmouseup = function (e) {mouseDown = false}
+var min = Math.min, max = Math.max, abs = Math.abs, hypot = Math.hypot, atan2 = Math.atan2, cos = Math.cos, sin = Math.sin, round = Math.round, floor = Math.floor, tan = Math.tan, sqrt = Math.sqrt
+//easy mode: 15 lives, unlimited ammo (no reload)
+//medium mode: 10 lives, unlimited ammo (reload), moving reduces accuracy, constant firing reduces accuracy
+//hard mode: 10 lives, limited ammo, recoil, melee weapons have durability
+//insane mode: 10 lives, armor works less often (75%)
+//insane+ mode: 10 lives, projectiles are 4x faster
+//modes:
+//endless: get upgs, fight enemies
+//arena: fight waves of enemies, each wave grants you a buff
+//upgrades:
+//path 1:
+//+50% damage
+//+30% atk speed
+//+400% durability
+//+1 weapon mag
+//+50% mag size
+//+150% projectile speed
+//path 2:
+//you can start with higher time
+//you start with a low quality weapon (0.7)
+//+50% xp gain
+//your starting weapon has 3 mags
+//you start with a higher quality weapon (1.5)
+//path 3:
+//you have 15 mhp regardless of difficulty
+//dash cooldown and invincibilty period is halved
+//dash invincibility period is increased by 50%
+//dashing into enemies now deal 3x damage if that amount doesnt kill dashed enemy 
+//you move 40% faster
+//path 4:
+//you can duel wield weapons
+//bullets can collide with you during the dash invinicibility period
+//enemy projectiles near you will have a chance to turn into yours
+//you have an invincibility period after getting hit
 </script>
 </html>
